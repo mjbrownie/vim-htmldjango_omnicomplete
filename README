@@ -16,6 +16,8 @@ Eg.
     It also should grab any libs you have {% load tag_lib %} in the file.
     Although it needs them in INSTALLED_APPS.
 
+    {% load <c-x><c-o> %} will complete libraries (eg. 'cache', 'humanize')
+
 Requires:
 
     +python
@@ -55,4 +57,7 @@ TODO
     ]
     EOF
 
-    add {% load <lib> %} complete
+
+    I also want to add template name completion eg.
+
+    {% extends '<c-x><c-o>' %} will list base.html ... etc

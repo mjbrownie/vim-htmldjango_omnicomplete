@@ -37,6 +37,12 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
         let line = getline('.')
         let start = col('.') -1
 
+        "check for {% load %}
+        if match(line, '{% load ') >  -1
+            execute "python htmldjangocomplete('load', '" . a:base . "')"
+            return g:htmldjangocomplete_completions
+        endif
+
         while start > 0
             if line[start] == ':' && s:in_django(line,start) == 1
                 execute "python htmldjangocomplete('variable', '" . a:base . "')"
@@ -82,28 +88,46 @@ let g:htmldjangocomplete_completions = []
 function! s:load_libs()
 if has('python')
 python << EOF
+DEBUG = False
 import vim
 from django.template import import_library, get_library
+from django.template import get_templatetags_modules
 import re
 from operator import itemgetter
+import pkgutil
+import os
+
+
+def get_tag_libraries():
+    opts = []
+    for module in get_templatetags_modules():
+        mod = __import__(module,fromlist=['foo'])
+        for l,m,i in pkgutil.iter_modules([os.path.dirname(mod.__file__)]):
+            opts.append({'word':m,'menu':mod.__name__})
+
+    return opts
+
 
 def _get_doc(doc, name):
     if doc:
         return doc.replace('"',' ').replace("'",' ')
     return '%s: no doc' % name
 
-def _get_opt_dict(lib,t):
+def _get_opt_dict(lib,t,libname=''):
     opts = getattr(lib,t)
     return [
-    {'word':f, 'info': _get_doc(opts[f].__doc__,f)} \
+    {'word':f, 'info': _get_doc(opts[f].__doc__,f),'menu':libname} \
     for f in opts.keys()]
 
-
 htmldjango_opts = {}
+
+
+htmldjango_opts['load'] = get_tag_libraries()
+
 def_filters = import_library('django.template.defaultfilters')
-htmldjango_opts['filter'] = _get_opt_dict(def_filters,'filters')
+htmldjango_opts['filter'] = _get_opt_dict(def_filters,'filters','default')
 def_tags = import_library('django.template.defaulttags')
-htmldjango_opts['tag'] = _get_opt_dict(def_tags,'tags')
+htmldjango_opts['tag'] = _get_opt_dict(def_tags,'tags','default')
 
 cb = vim.current.buffer
 for line in cb:
@@ -112,18 +136,17 @@ for line in cb:
         for lib in m.groups()[0].rstrip().split(' '):
             try:
                 l = get_library(lib)
-                htmldjango_opts['filter'] += _get_opt_dict(l,'filters')
-                htmldjango_opts['tag'] += _get_opt_dict(l,'tags')
+                htmldjango_opts['filter'] += _get_opt_dict(l,'filters',lib)
+                htmldjango_opts['tag'] += _get_opt_dict(l,'tags',lib)
                 #print "LOADED: %s" % lib
-            except:
-                #print "WARNING: Failed to load tag library (%s)" % lib
-                pass
+            except Exception as e:
+                if DEBUG:
+                    raise e
 
 #TODO I may be able to populate RequestContext via middleware component
 htmldjango_opts['variable'] = []
 
 def htmldjangocomplete(context,match):
-
     all = htmldjango_opts[context]
 
     vim.command("silent let g:htmldjangocomplete_completions = []")
