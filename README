@@ -1,0 +1,58 @@
+Vim htmldjango autocomplete
+
+An omnicomplete tailored to django templates "tags/variables/filters"
+
+Eg.
+
+    {{ somevar|a<c-x><c-o>}} should complete 'add' , 'addslashes'
+
+    {% cy<c-x><x-o> %} should complete 'cycle'
+
+    It also makes an optional variable match although see below for caveats.
+
+    info panels show the functions __doc__. Most of the internal ones are
+    decent.
+
+    It also should grab any libs you have {% load tag_lib %} in the file.
+    Although it needs them in INSTALLED_APPS.
+
+Requires:
+
+    +python
+
+SETUP
+
+    I like pathogen/Vundle clone into ~/.vim/bundle directory.
+
+    in .vimrc set
+        au FileType htmldjango set omnifunc=htmldjangocomplete#CompleteDjango
+
+    django needs to be in sys.path along with DJANGO_SETTINGS_MODULE in your
+    environment.
+
+    To test...
+
+    :python import django
+
+TODO
+
+    This is just a proof of concept at the moment. It does not yet fall back
+    to html omnicomplete elegantly.
+
+    -python fallback to naive lists.
+
+    Also RequestContext variables aren't seamlessly populated. It is possible
+    to populate a naive list yourself. In a future edition I might look at
+    plugging in python omnicomplete and grabbing Variables with some
+    middleware trickery. Ideas welcome.
+
+    some vim file to :so 
+
+    python << EOF
+    htmldjango_opts['variable'] = [
+    {'word': 'myvariable', info:'my description'},
+    {'word': 'my_other_variable', info:'my description'},
+    ]
+    EOF
+
+    add {% load <lib> %} complete
