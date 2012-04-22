@@ -27,7 +27,10 @@ Eg.
 
     5. optional variable name completion (placeholder)
 
-        It also makes an optional variable match although see below for caveats.
+        {{ s<c-x><x-o> }}
+
+        will complete any maps defined in the python htmldjango_opts['variable']
+        dict list. See below for info.
 
 
     Where possible info panels show the functions __doc__. Most of the

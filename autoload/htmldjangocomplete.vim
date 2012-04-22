@@ -118,8 +118,6 @@ def get_template_names(pattern):
     matches = []
     for d in dirs:
         for m in glob(os.path.join(d,pattern + '*')):
-            print "Match " + m
-
             if os.path.isdir(m):
                 for root,dirnames,filenames in os.walk(m):
                     for f in filenames:
@@ -179,7 +177,6 @@ for line in cb:
                 l = get_library(lib)
                 htmldjango_opts['filter'] += _get_opt_dict(l,'filters',lib)
                 htmldjango_opts['tag'] += _get_opt_dict(l,'tags',lib)
-                #print "LOADED: %s" % lib
             except Exception as e:
                 if DEBUG:
                     raise e
