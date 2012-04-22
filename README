@@ -2,6 +2,8 @@ Vim htmldjango autocomplete
 
 An omnicomplete tailored to django templates "tags/variables/filters/templates"
 
+Repo: git://github.com/mjbrownie/vim-htmldjango_omnicomplete.git
+
 Eg.
 
     1. Filters
@@ -37,10 +39,15 @@ Requires:
 
 SETUP
 
-    I like pathogen/Vundle clone into ~/.vim/bundle directory.
+    1. I like pathogen/Vundle clone into ~/.vim/bundle directory.
 
-    in .vimrc set
+        Alternately just stick the vim file in your ~/.vim/autoload/ dir.
+
+    2. in .vimrc set the omnifunc Eg.
+
         au FileType htmldjango set omnifunc=htmldjangocomplete#CompleteDjango
+
+TESTING
 
     django needs to be in sys.path along with DJANGO_SETTINGS_MODULE in your
     environment.
@@ -49,10 +56,23 @@ SETUP
 
     :python import django
 
+    should not result in an error
+
+    :python from django.conf import settings; print settings.INSTALLED_APPS
+    :python from django.conf import settings; print settings.TEMPLATE_DIRS
+
+    should show the apps template dirs you need
+
+    I've only tested this on a mac with vim 7.3 and django 1.4
+
 TODO
 
     This is just a proof of concept at the moment. It does not yet fall back
     to html omnicomplete elegantly.
+
+    most of the line regexps still need tweaking. This might not work well with
+    an auto popup plugin like autocompletepop. Expect incorrect types to be set
+    as the context.
 
     -python fallback to naive lists.
 
