@@ -1,22 +1,35 @@
 Vim htmldjango autocomplete
 
-An omnicomplete tailored to django templates "tags/variables/filters"
+An omnicomplete tailored to django templates "tags/variables/filters/templates"
 
 Eg.
 
-    {{ somevar|a<c-x><c-o>}} should complete 'add' , 'addslashes'
+    1. Filters
 
-    {% cy<c-x><x-o> %} should complete 'cycle'
+        {{ somevar|a<c-x><c-o>}} should complete 'add' , 'addslashes'
 
-    It also makes an optional variable match although see below for caveats.
+    2. Tags
 
-    info panels show the functions __doc__. Most of the internal ones are
-    decent.
+        {% cy<c-x><x-o> %} should complete 'cycle'
 
-    It also should grab any libs you have {% load tag_lib %} in the file.
-    Although it needs them in INSTALLED_APPS.
+    3. Load statements
 
-    {% load <c-x><c-o> %} will complete libraries (eg. 'cache', 'humanize')
+        It also should grab any libs you have {% load tag_lib %} in the file.
+        Although it needs them in INSTALLED_APPS.
+
+        {% load <c-x><c-o> %} will complete libraries (eg. 'cache', 'humanize')
+
+    4. template filenames
+
+        {% extends '<c-x><c-o>' %} will list base.html ... etc
+
+    5. optional variable name completion (placeholder)
+
+        It also makes an optional variable match although see below for caveats.
+
+
+    Where possible info panels show the functions __doc__. Most of the
+    internal ones are decent.
 
 Requires:
 
@@ -57,7 +70,3 @@ TODO
     ]
     EOF
 
-
-    I also want to add template name completion eg.
-
-    {% extends '<c-x><c-o>' %} will list base.html ... etc
