@@ -1,0 +1,4 @@
+
+v0.5.1 Mon 23 Apr 2012
+    - compatability fixes for older django versions
+    - fix some edge cases in tag detection
