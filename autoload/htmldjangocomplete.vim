@@ -8,7 +8,6 @@
 function! htmldjangocomplete#CompleteDjango(findstart, base)
     "findstart = 1 when we need to get the text length
     "
-    call s:load_libs()
 
     if a:findstart == 1
         " locate the start of the word
@@ -32,6 +31,8 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
         return start
     "findstart = 0 when we need to return the list of completions
     else
+        "TODO: Reduce load always nature of this plugin
+        call s:load_libs()
         "get context look for {% {{ and |
         let line = getline('.')
         let start = col('.') -1
@@ -103,18 +104,49 @@ DEBUG = False
 TEMPLATE_EXTS = ['.html','.txt','.htm']
 
 import vim
-from django.template import import_library, get_library
-from django.template import get_templatetags_modules
+from django.template import get_library
+#Later versions of django seem to be fussy about get_library paths.
+try:
+    from django.template import import_library
+except ImportError:
+    import_library = get_library
+
+
 from django.template.loaders.app_directories import app_template_dirs
-from django.conf import settings
+from django.conf import settings as mysettings
 import re
 from operator import itemgetter
 import pkgutil
 import os
+from glob import glob
+
+try:
+    from django.template import get_templatetags_modules
+except ImportError:
+    #I've lifted this version from the django source
+    from django.utils.importlib import import_module
+    def get_templatetags_modules():
+        """
+        Return the list of all available template tag modules.
+
+        Caches the result for faster access.
+        """
+        _templatetags_modules = []
+        # Populate list once per process. Mutate the local list first, and
+        # then assign it to the global name to ensure there are no cases where
+        # two threads try to populate it simultaneously.
+        for app_module in ['django'] + list(mysettings.INSTALLED_APPS):
+            try:
+                templatetag_module = '%s.templatetags' % app_module
+                import_module(templatetag_module)
+                _templatetags_modules.append(templatetag_module)
+            except ImportError:
+                continue
+        return _templatetags_modules
 
 # {{{2 Support functions
 def get_template_names(pattern):
-    dirs = settings.TEMPLATE_DIRS + app_template_dirs
+    dirs = mysettings.TEMPLATE_DIRS + app_template_dirs
     matches = []
     for d in dirs:
         for m in glob(os.path.join(d,pattern + '*')):
