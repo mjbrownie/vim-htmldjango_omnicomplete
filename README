@@ -50,6 +50,21 @@ SETUP
 
         au FileType htmldjango set omnifunc=htmldjangocomplete#CompleteDjango
 
+    3. Optional: At the moment you need to force a html flavour for htmlcompletion
+
+        in .vimrc
+
+        let g:htmldjangocomplete_html_flavour = 'html401s'
+
+        :verbose function htmlcomplete#CheckDoctype for DocType details
+
+        Choices:
+            'html401t' 'xhtml10s' 'html32' 'html40t' 'html40f' 'html40s'
+            'html401t' 'html401f' 'html401s' 'xhtml10t' 'xhtml10f' 'xhtml10s'
+            'xhtml11'
+
+            'html5' if you have html5.vim
+
 TESTING
 
     django needs to be in sys.path along with DJANGO_SETTINGS_MODULE in your
@@ -70,12 +85,9 @@ TESTING
 
 TODO
 
-    This is just a proof of concept at the moment. It does not yet fall back
-    to html omnicomplete elegantly.
-
     most of the line regexps still need tweaking. This might not work well with
     an auto popup plugin like autocompletepop. Expect incorrect types to be set
-    as the context.
+    as the context for edge cases.
 
     -python fallback to naive lists.
 
@@ -84,7 +96,7 @@ TODO
     plugging in python omnicomplete and grabbing Variables with some
     middleware trickery. Ideas welcome.
 
-    some vim file to :so 
+    some vim file to :so
 
     python << EOF
     htmldjango_opts['variable'] = [
@@ -93,3 +105,13 @@ TODO
     ]
     EOF
 
+    super block complete
+
+        eg {% block c<c-x><c-o> %} to complete 'content' or something defined
+        in an extended template.
+
+    url complete
+        {% url <c-x><c-o> %} should complete views and named urls
+
+    Intelligent DOCTYPE handling
+        look for extends ... detect type in base html document etc

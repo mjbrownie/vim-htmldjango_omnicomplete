@@ -1,4 +1,8 @@
 
+<<<<<<< HEAD
 v0.5.1 Mon 23 Apr 2012
     - compatability fixes for older django versions
     - fix some edge cases in tag detection
+=======
+v0.6 - html omni support / better matching 
+>>>>>>> 1536b3ca8b747f5578c5a41c1684b17e709113bc
