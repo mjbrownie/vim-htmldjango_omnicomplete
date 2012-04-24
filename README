@@ -110,5 +110,8 @@ TODO
         eg {% block c<c-x><c-o> %} to complete 'content' or something defined
         in an extended template.
 
+    url complete
+        {% url <c-x><c-o> %} should complete views and named urls
+
     Intelligent DOCTYPE handling
         look for extends ... detect type in base html document etc
