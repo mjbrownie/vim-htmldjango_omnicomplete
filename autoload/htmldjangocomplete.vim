@@ -107,7 +107,7 @@ endfunction
 function! s:in_django(l,s)
     let line = a:l
     let start = a:s
-    while start > 0
+    while start >= 0
         if line[start] == '}'
             return 0
         elseif line[start] == '{'
