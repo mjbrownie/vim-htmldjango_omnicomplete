@@ -1,7 +1,8 @@
 " Vim completion script
 " Language: htmldjango
 " Maintainer:   Michael Brown
-" Last Change:  Sun 22 Apr 2012 01:29:23 EST
+" Last Change:  Mon Apr 23 22:52:25 CDT 2012
+" Version: 0.6
 " Omnicomplete for django template taga/variables/filters
 " {{{1 Environment Settings
 if !exists('g:htmldjangocomplete_html_flavour')
