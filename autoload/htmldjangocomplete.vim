@@ -3,13 +3,30 @@
 " Maintainer:   Michael Brown
 " Last Change:  Sun 22 Apr 2012 01:29:23 EST
 " Omnicomplete for django template taga/variables/filters
-"
+if !exists('g:htmldjangocomplete_html_flavour')
+    " :verbose function htmlcomplete#CheckDoctype for details
+    " No html5!
+    "'html401t' 'xhtml10s' 'html32' 'html40t' 'html40f' 'html40s'
+    "'html401t' 'html401f' 'html401s' 'xhtml10t' 'xhtml10f' 'xhtml10s'
+    "'xhtml11'
+    let g:htmldjangocomplete_html_flavour = 'xhtml11'
+endif
+
 "{{{1 The actual omnifunc
 function! htmldjangocomplete#CompleteDjango(findstart, base)
-    "findstart = 1 when we need to get the text length
+    "{{{2 findstart = 1 when we need to get the text length
     "
-
     if a:findstart == 1
+
+        "Fallback to htmlcomplete
+        if searchpair('{{','','}}','n') == 0 && searchpair('{%',"",'%}','n') == 0
+            if !exists('b:html_doctype')
+                let b:html_doctype = 1
+                let b:html_omni_flavor = g:htmldjangocomplete_html_flavour
+            endif
+            return htmlcomplete#CompleteTags(a:findstart,a:base)
+        endif
+
         " locate the start of the word
         let line = getline('.')
         let start = col('.') - 1
@@ -29,8 +46,16 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
           let start -= 1
         endwhile
         return start
-    "findstart = 0 when we need to return the list of completions
+    "{{{2 findstart = 0 when we need to return the list of completions
     else
+        "Fallback to htmlcomplete
+        if searchpair('{{','','}}','n') == 0 && searchpair('{%',"",'%}','n') == 0
+            let matches = htmlcomplete#CompleteTags(a:findstart,a:base)
+            "suppress all DOCTYPE matches
+            call filter(matches, 'stridx(v:val["word"],"DOCTYPE") == -1')
+            return matches
+        endif
+
         "TODO: Reduce load always nature of this plugin
         call s:load_libs()
         "get context look for {% {{ and |
