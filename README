@@ -119,4 +119,5 @@ TODO
 
     {% filter %} complete.
 
-        Special case  for filter. provide filters as first argument
+        Special case  for filter. provide filters as first argument. Limit to
+        string filters
