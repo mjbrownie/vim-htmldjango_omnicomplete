@@ -1,8 +1,8 @@
 " Vim completion script
 " Language: htmldjango
 " Maintainer:   Michael Brown
-" Last Change:  Mon Apr 23 22:52:25 CDT 2012
-" Version: 0.6
+" Last Change:  Thu Apr 26 18:57:14 CDT 2012
+" Version: 0.7
 " Omnicomplete for django template taga/variables/filters
 " {{{1 Environment Settings
 if !exists('g:htmldjangocomplete_html_flavour')
@@ -14,7 +14,7 @@ if !exists('g:htmldjangocomplete_html_flavour')
     let g:htmldjangocomplete_html_flavour = 'xhtml11'
 endif
 
-"Allow settings of DEBUG 
+"Allow settings of DEBUG
 if !exists('g:htmldjangocomplete_debug')
     let g:htmldjangocomplete_debug = 0
 endif
@@ -40,7 +40,7 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
         "special case for {% extends %} {% import %} needs to grab /'s
         "TODO make this match more flexible. It needs to know its in a string
         "also need to handle inline imports
-        if match (line,"{% extends ") > -1 || match(line,"{% include ") > -1
+        if s:get_context() == 'extends'|| s:get_context() == 'include'
             while start > 0 && line[start - 1] != '"' && line[start -1] != "'"
                         \ && line[start -1] != ' '
             let start -= 1
@@ -63,6 +63,12 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
             return matches
         endif
 
+        let context = s:get_context()
+
+        if context == 'extends' || context == 'include'
+            let context = 'template'
+        endif
+
         "TODO: Reduce load always nature of this plugin
         call s:load_libs()
         "get context look for {% {{ and |
@@ -70,19 +76,9 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
         let start = col('.') -1
 
         " Special case for extends and import
-        if match (line,"{% extends ") > -1 || match(line,"{% include ") > -1
-            execute "python htmldjangocomplete('template', '" . a:base . "')"
-            return g:htmldjangocomplete_completions
-        endif
-
-        "check for {% load %}
-        if match(line, '{% load ') >  -1
-            execute "python htmldjangocomplete('load', '" . a:base . "')"
-            return g:htmldjangocomplete_completions
-        endif
-
-        if match(line, '{% url ') >  -1
-            execute "python htmldjangocomplete('url', '" . a:base . "')"
+        " TODO 'filter' should really just be string filters
+        if index(['template','load','url','filter','block'],context) != -1
+            execute "python htmldjangocomplete('" . context . "', '" . a:base . "')"
             return g:htmldjangocomplete_completions
         endif
 
@@ -104,6 +100,7 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
             endif
         endwhile
 
+        return [ {'word': "nomatch"} ]
         "fallback to htmlcomplete TODO This doesn't work as expected.
         "Might need to turn off some doctype setting.
         "
@@ -112,10 +109,23 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
     endif
 endfunction
 
-"Supporting vim function {{{1
+"Supporting vim functions {{{1
+function! s:get_context()
+    let curpos = getpos('.')
+    let line = getline('.')
+
+    "tags
+    let starttag = searchpairpos('{%', '', '%}', 'bn')
+    if starttag != [0,0]
+        let fragment = line[starttag[1]:curpos[2]]
+        return split(fragment,' ')[1]
+    endif
+
+    return "other"
+endfunction
+
 "TODO This could probably be neater with an index check. need to get strings
 "working
-
 function! s:in_django(l,s)
     let line = a:l
     let start = a:s
@@ -159,7 +169,6 @@ from operator import itemgetter
 import pkgutil
 import os
 from glob import glob
-import urls
 
 try:
     from django.template import get_templatetags_modules
@@ -256,6 +265,11 @@ def_tags = import_library('django.template.defaulttags')
 htmldjango_opts['tag'] = _get_opt_dict(def_tags,'tags','default')
 load_app_tags()
 
+try:
+    urls = __import__(settings.ROOT_URLCONF,fromlist=['foo'])
+except:
+    urls = {'urlpatterns':None}
+
 def htmldjango_urls(pattern):
     matches = []
     def get_urls(urllist,parent=None):
@@ -273,6 +287,8 @@ def htmldjango_urls(pattern):
 
 #TODO I may be able to populate RequestContext via middleware component
 htmldjango_opts['variable'] = []
+#TODO Write a function that gets all ancestor template blocks
+htmldjango_opts['block'] = []
 
 # Main Python function {{{2
 def htmldjangocomplete(context,match):
@@ -306,4 +322,13 @@ function! TestLoadLibs()
     call s:load_libs()
 endfunction
 
+function! HtmlDjangoDebug(on)
+    if a:on
+        echo "adding Breakpoint"
+        breakadd func htmldjangocomplete#CompleteDjango
+    else
+        echo "remove Breakpoint"
+        breakdel func htmldjangocomplete#CompleteDjango
+    endif
+endfunction
 " vim:set foldmethod=marker:
