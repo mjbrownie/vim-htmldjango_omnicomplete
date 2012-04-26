@@ -81,6 +81,11 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
             return g:htmldjangocomplete_completions
         endif
 
+        if match(line, '{% url ') >  -1
+            execute "python htmldjangocomplete('url', '" . a:base . "')"
+            return g:htmldjangocomplete_completions
+        endif
+
         while start > 0
             if line[start] == ':' && s:in_django(line,start) == 1
                 execute "python htmldjangocomplete('variable', '" . a:base . "')"
@@ -154,6 +159,7 @@ from operator import itemgetter
 import pkgutil
 import os
 from glob import glob
+import urls
 
 try:
     from django.template import get_templatetags_modules
@@ -225,6 +231,20 @@ def _get_opt_dict(lib,t,libname=''):
     {'word':f, 'info': _get_doc(opts[f].__doc__,f),'menu':libname} \
     for f in opts.keys()]
 
+def load_app_tags():
+    cb = vim.current.buffer
+    for line in cb:
+        m =  re.compile('{% load (.*)%}').match(line)
+        if m:
+            for lib in m.groups()[0].rstrip().split(' '):
+                try:
+                    l = get_library(lib)
+                    htmldjango_opts['filter'] += _get_opt_dict(l,'filters',lib)
+                    htmldjango_opts['tag'] += _get_opt_dict(l,'tags',lib)
+                except Exception as e:
+                    if HTMLDJANGO_DEBUG:
+                        print "FAILED TO LOAD: %s" % lib
+                        raise e
 # {{{2 load options
 # TODO At the moment this is being loaded every match
 htmldjango_opts = {}
@@ -234,20 +254,22 @@ def_filters = import_library('django.template.defaultfilters')
 htmldjango_opts['filter'] = _get_opt_dict(def_filters,'filters','default')
 def_tags = import_library('django.template.defaulttags')
 htmldjango_opts['tag'] = _get_opt_dict(def_tags,'tags','default')
+load_app_tags()
 
-cb = vim.current.buffer
-for line in cb:
-    m =  re.compile('{% load (.*)%}').match(line)
-    if m:
-        for lib in m.groups()[0].rstrip().split(' '):
-            try:
-                l = get_library(lib)
-                htmldjango_opts['filter'] += _get_opt_dict(l,'filters',lib)
-                htmldjango_opts['tag'] += _get_opt_dict(l,'tags',lib)
-            except Exception as e:
-                if HTMLDJANGO_DEBUG:
-                    print "FAILED TO LOAD: %s" % lib
-                    raise e
+def htmldjango_urls(pattern):
+    matches = []
+    def get_urls(urllist,parent=None):
+        for entry in urllist:
+            if hasattr(entry,'name') and entry.name:
+                matches.append(dict(
+                    word = entry.name,
+                    info = entry.regex.pattern,
+                    menu = parent and parent.urlconf_name or '')
+                    )
+            if hasattr(entry, 'url_patterns'):
+                get_urls(entry.url_patterns, entry)
+    get_urls(urls.urlpatterns)
+    return matches
 
 #TODO I may be able to populate RequestContext via middleware component
 htmldjango_opts['variable'] = []
@@ -256,6 +278,8 @@ htmldjango_opts['variable'] = []
 def htmldjangocomplete(context,match):
     if context == 'template':
         all = get_template_names(match)
+    elif context == 'url':
+        all = htmldjango_urls(match)
     else:
         all = htmldjango_opts[context]
 

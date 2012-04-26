@@ -25,7 +25,11 @@ Eg.
 
         {% extends '<c-x><c-o>' %} will list base.html ... etc
 
-    5. optional variable name completion (placeholder)
+    5. url complete
+
+        {% url <c-x><c-o> %} should complete views and named urls
+
+    6. optional variable name completion (placeholder)
 
         {{ s<c-x><x-o> }}
 
@@ -110,8 +114,9 @@ TODO
         eg {% block c<c-x><c-o> %} to complete 'content' or something defined
         in an extended template.
 
-    url complete
-        {% url <c-x><c-o> %} should complete views and named urls
-
     Intelligent DOCTYPE handling
         look for extends ... detect type in base html document etc
+
+    {% filter %} complete.
+
+        Special case  for filter. provide filters as first argument
