@@ -169,7 +169,6 @@ from operator import itemgetter
 import pkgutil
 import os
 from glob import glob
-import urls
 
 try:
     from django.template import get_templatetags_modules
@@ -265,6 +264,11 @@ htmldjango_opts['filter'] = _get_opt_dict(def_filters,'filters','default')
 def_tags = import_library('django.template.defaulttags')
 htmldjango_opts['tag'] = _get_opt_dict(def_tags,'tags','default')
 load_app_tags()
+
+try:
+    urls = __import__(settings.ROOT_URLCONF,fromlist=['foo'])
+except:
+    urls = {'urlpatterns':None}
 
 def htmldjango_urls(pattern):
     matches = []
