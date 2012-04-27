@@ -266,9 +266,9 @@ htmldjango_opts['tag'] = _get_opt_dict(def_tags,'tags','default')
 load_app_tags()
 
 try:
-    urls = __import__(settings.ROOT_URLCONF,fromlist=['foo'])
+    urls = __import__(mysettings.ROOT_URLCONF,fromlist=['foo'])
 except:
-    urls = {'urlpatterns':None}
+    urls = None
 
 def htmldjango_urls(pattern):
     matches = []
@@ -282,7 +282,8 @@ def htmldjango_urls(pattern):
                     )
             if hasattr(entry, 'url_patterns'):
                 get_urls(entry.url_patterns, entry)
-    get_urls(urls.urlpatterns)
+    if urls:
+        get_urls(urls.urlpatterns)
     return matches
 
 #TODO I may be able to populate RequestContext via middleware component
