@@ -121,3 +121,9 @@ TODO
 
         Special case  for filter. provide filters as first argument. Limit to
         string filters
+
+INTERNAL TODO
+
+    Refactor to cleanup namespace under a htmldjangocomplete class
+
+    remove load always plugin
