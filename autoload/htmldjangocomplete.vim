@@ -167,7 +167,7 @@ from django.template.loaders.app_directories import app_template_dirs
 from django.conf import settings as mysettings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, BlockNode
-from django.template.base import Template
+from django.template import Template
 
 import re
 from operator import itemgetter
