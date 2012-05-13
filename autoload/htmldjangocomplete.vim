@@ -155,6 +155,7 @@ TEMPLATE_EXTS = ['.html','.txt','.htm']
 
 import vim
 from django.template import get_library
+from django.template.loaders import filesystem, app_directories
 #Later versions of django seem to be fussy about get_library paths.
 try:
     from django.template import import_library
@@ -164,6 +165,10 @@ except ImportError:
 
 from django.template.loaders.app_directories import app_template_dirs
 from django.conf import settings as mysettings
+from django.template.loader import get_template
+from django.template.loader_tags import ExtendsNode, BlockNode
+from django.template.base import Template
+
 import re
 from operator import itemgetter
 import pkgutil
@@ -195,6 +200,48 @@ except ImportError:
         return _templatetags_modules
 
 # {{{2 Support functions
+
+def get_block_tags(start=''):
+
+    #use regexp for extends as get_template will fail on tag errors
+    rexp = re.compile('{%\s*extends\s*[\'"](.*)["\']\s*%}')
+    base = None
+    templates = [] # for cycle detection
+
+    for l in vim.current.buffer[0:10]:
+        match = rexp.match(l)
+        if match:
+            try:
+                base = get_template(match.groups()[0])
+            except:
+                return []
+
+    if not base:
+        return []
+
+    def _get_blocks(t,menu_prefix = ''):
+
+        if t.name in templates and isinstance(t,Template):
+            print "cyclic extends detected!"
+            return []
+        else:
+            templates.append(t.name)
+
+        blocks = [(b, b.name, menu_prefix + t.name) \
+            for b in t.nodelist if isinstance(b,BlockNode)]
+
+        for b, bn, n in blocks:
+            blocks += _get_blocks(b,'%s%s > ' % (menu_prefix,n))
+
+        if len(t.nodelist) > 0 and isinstance(t.nodelist[0], ExtendsNode):
+            blocks += _get_blocks(get_template(t.nodelist[0].parent_name))
+
+        return blocks
+
+    matches =  _get_blocks(base)
+
+    return [{'word':n,'menu':m} for b, n, m in matches if n.startswith(start)]
+
 def get_template_names(pattern):
     dirs = mysettings.TEMPLATE_DIRS + app_template_dirs
     matches = []
@@ -297,6 +344,8 @@ def htmldjangocomplete(context,match):
         all = get_template_names(match)
     elif context == 'url':
         all = htmldjango_urls(match)
+    elif context == 'block':
+        all = get_block_tags(match)
     else:
         all = htmldjango_opts[context]
 

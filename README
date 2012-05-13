@@ -29,7 +29,12 @@ Eg.
 
         {% url <c-x><c-o> %} should complete views and named urls
 
-    6. optional variable name completion (placeholder)
+    6. super block complete
+
+        eg {% block c<c-x><c-o> %} to complete 'content' or something defined
+        in an extended template.
+
+    7. optional variable name completion (placeholder)
 
         {{ s<c-x><x-o> }}
 
@@ -108,11 +113,6 @@ TODO
     {'word': 'my_other_variable', info:'my description'},
     ]
     EOF
-
-    super block complete
-
-        eg {% block c<c-x><c-o> %} to complete 'content' or something defined
-        in an extended template.
 
     Intelligent DOCTYPE handling
         look for extends ... detect type in base html document etc
