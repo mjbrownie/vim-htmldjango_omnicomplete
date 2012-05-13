@@ -7,3 +7,6 @@ v0.6 - html omni support / better matching
 v0.7 Thu Apr 26 2012
     -url matching
     -inline {% import %} support
+
+v0.8 Sun 13 May 2012
+    - {% block %} name complete
