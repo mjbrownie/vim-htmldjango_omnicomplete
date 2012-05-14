@@ -80,6 +80,15 @@ SETUP
 
             'html5' if you have html5.vim
 
+    4. matchpair notes
+
+        This plugin uses matchpair and needs to be inside a closed django tag. 
+        This is fine if you are using snipmate. Also you might want auto
+        closing maps such as follows.
+
+        au FileType htmldjango inoremap {% {% %}<left><left><left>
+        au FileType htmldjango inoremap {{ {{ }}<left><left><left>
+
 TESTING
 
     django needs to be in sys.path along with DJANGO_SETTINGS_MODULE in your
