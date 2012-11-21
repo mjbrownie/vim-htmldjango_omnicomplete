@@ -137,6 +137,10 @@ TODO
         Special case  for filter. provide filters as first argument. Limit to
         string filters
 
+
+    add static file complete. using <a href="{{STATIC_URL}}leader<x-><c-o>">.
+    use ./manage.py findstatic as reference code
+
 INTERNAL TODO
 
     Refactor to cleanup namespace under a htmldjangocomplete class
