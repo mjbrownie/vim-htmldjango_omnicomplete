@@ -10,3 +10,6 @@ v0.7 Thu Apr 26 2012
 
 v0.8 Sun 13 May 2012
     - {% block %} name complete
+
+v0.8.1 Sun 25 Nov 2012
+   - warning suppression on imports
