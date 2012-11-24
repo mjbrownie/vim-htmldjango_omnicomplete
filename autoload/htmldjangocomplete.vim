@@ -153,6 +153,11 @@ except:
 
 TEMPLATE_EXTS = ['.html','.txt','.htm']
 
+import warnings
+warnings.filterwarnings('ignore',
+    '.*',
+    UserWarning,)
+
 import vim
 from django.template import get_library
 from django.template.loaders import filesystem, app_directories
