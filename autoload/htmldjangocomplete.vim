@@ -41,6 +41,7 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
         "TODO make this match more flexible. It needs to know its in a string
         "also need to handle inline imports
         if s:get_context() == 'extends'|| s:get_context() == 'include'
+                    \ ||  s:get_context() == 'static'
             while start > 0 && line[start - 1] != '"' && line[start -1] != "'"
                         \ && line[start -1] != ' '
             let start -= 1
