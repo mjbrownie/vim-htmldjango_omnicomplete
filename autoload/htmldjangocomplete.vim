@@ -77,7 +77,7 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
 
         " Special case for extends and import
         " TODO 'filter' should really just be string filters
-        if index(['template','load','url','filter','block'],context) != -1
+        if index(['template','load','url','filter','block', 'static'],context) != -1
             execute "python htmldjangocomplete('" . context . "', '" . a:base . "')"
             return g:htmldjangocomplete_completions
         endif
@@ -205,7 +205,6 @@ except ImportError:
         return _templatetags_modules
 
 # {{{2 Support functions
-
 def get_block_tags(start=''):
 
     #use regexp for extends as get_template will fail on tag errors
@@ -268,6 +267,32 @@ def get_template_names(pattern):
                     'info' : 'found in %s' % d
                 }
                 )
+
+    return matches
+
+from django.contrib.staticfiles import finders, storage
+def get_staticfiles(pattern):
+
+    dirs = mysettings.STATICFILES_DIRS
+
+    #TODO crude matching
+    line = vim.current.line
+    if 'script' in line:
+        ext = ".*\.js$"
+    elif 'style' in line:
+        ext = ".*\.css$"
+    elif 'img' in line:
+        ext = ".*\.(gif|jpg|jpeg|png)$"
+    else:
+        ext = '.*'
+
+    matches = []
+
+    for finder in finders.get_finders():
+        for path, storage in finder.list([]):
+            if re.compile(ext,re.IGNORECASE).match(path) \
+                and path.startswith(pattern):
+                matches.append(dict(word=path,info=''))
 
     return matches
 
@@ -347,6 +372,8 @@ htmldjango_opts['block'] = []
 def htmldjangocomplete(context,match):
     if context == 'template':
         all = get_template_names(match)
+    elif context == 'static':
+        all = get_staticfiles(match)
     elif context == 'url':
         all = htmldjango_urls(match)
     elif context == 'block':
