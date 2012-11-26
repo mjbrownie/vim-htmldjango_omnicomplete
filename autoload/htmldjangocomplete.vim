@@ -2,7 +2,7 @@
 " Language: htmldjango
 " Maintainer:   Michael Brown
 " Last Change:  Sun 13 May 2012 16:39:45 EST
-" Version: 0.8.1
+" Version: 0.9
 " Omnicomplete for django template taga/variables/filters
 " {{{1 Environment Settings
 if !exists('g:htmldjangocomplete_html_flavour')
