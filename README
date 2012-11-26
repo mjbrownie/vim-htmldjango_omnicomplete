@@ -40,7 +40,15 @@ Eg.
         eg {% block c<c-x><c-o> %} to complete 'content' or something defined
         in an extended template.
 
-    7. optional variable name completion (placeholder)
+    7. static files complete
+
+        eg {% static "r<c-x><c-o>" %}
+
+        <script src="{% static "<c-x><c-o>" %}" /> - completes js files in static
+        <style src="{% static "<c-x><c-o>" %}" /> - completes css files in static
+        <img src="{% static "<c-x><c-o>" %}" /> - completes img files in static
+
+    8. optional variable name completion (placeholder)
 
         {{ s<c-x><x-o> }}
 
@@ -137,9 +145,6 @@ TODO
         Special case  for filter. provide filters as first argument. Limit to
         string filters
 
-
-    add static file complete. using <a href="{{STATIC_URL}}leader<x-><c-o>">.
-    use ./manage.py findstatic as reference code
 
 INTERNAL TODO
 
