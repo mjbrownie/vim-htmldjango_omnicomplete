@@ -2,7 +2,7 @@
 " Language: htmldjango
 " Maintainer:   Michael Brown
 " Last Change:  Sun 13 May 2012 16:39:45 EST
-" Version: 0.8
+" Version: 0.8.1
 " Omnicomplete for django template taga/variables/filters
 " {{{1 Environment Settings
 if !exists('g:htmldjangocomplete_html_flavour')
@@ -77,7 +77,7 @@ function! htmldjangocomplete#CompleteDjango(findstart, base)
 
         " Special case for extends and import
         " TODO 'filter' should really just be string filters
-        if index(['template','load','url','filter','block'],context) != -1
+        if index(['template','load','url','filter','block', 'static'],context) != -1
             execute "python htmldjangocomplete('" . context . "', '" . a:base . "')"
             return g:htmldjangocomplete_completions
         endif
@@ -152,6 +152,11 @@ except:
     HTMLDJANGO_DEBUG = False
 
 TEMPLATE_EXTS = ['.html','.txt','.htm']
+
+import warnings
+warnings.filterwarnings('ignore',
+    '.*',
+    UserWarning,)
 
 import vim
 from django.template import get_library
@@ -266,6 +271,36 @@ def get_template_names(pattern):
 
     return matches
 
+try:
+    from django.contrib.staticfiles import finders, storage
+    def get_staticfiles(pattern):
+
+        dirs = mysettings.STATICFILES_DIRS
+
+        #TODO crude matching
+        line = vim.current.line
+        if 'script' in line:
+            ext = ".*\.js$"
+        elif 'style' in line:
+            ext = ".*\.css$"
+        elif 'img' in line:
+            ext = ".*\.(gif|jpg|jpeg|png)$"
+        else:
+            ext = '.*'
+
+        matches = []
+
+        for finder in finders.get_finders():
+            for path, storage in finder.list([]):
+                if re.compile(ext,re.IGNORECASE).match(path) \
+                    and path.startswith(pattern):
+                    matches.append(dict(word=path,info=''))
+
+        return matches
+except:
+    def get_staticfiles(pattern):
+        return []
+
 def get_tag_libraries():
     opts = []
     for module in get_templatetags_modules():
@@ -342,6 +377,8 @@ htmldjango_opts['block'] = []
 def htmldjangocomplete(context,match):
     if context == 'template':
         all = get_template_names(match)
+    elif context == 'static':
+        all = get_staticfiles(match)
     elif context == 'url':
         all = htmldjango_urls(match)
     elif context == 'block':
