@@ -250,8 +250,9 @@ def get_block_tags(start=''):
 def get_template_names(pattern):
     dirs = mysettings.TEMPLATE_DIRS + app_template_dirs
     matches = []
+    pattern = "*".join(list(pattern)) + '*'
     for d in dirs:
-        for m in glob(os.path.join(d,pattern + '*')):
+        for m in glob(os.path.join(d,pattern)):
             if os.path.isdir(m):
                 for root,dirnames,filenames in os.walk(m):
                     for f in filenames:
@@ -277,23 +278,22 @@ try:
 
         dirs = mysettings.STATICFILES_DIRS
 
+        pattern = "*".join(list(pattern)) + '*'
+
         #TODO crude matching
         line = vim.current.line
         if 'script' in line:
-            ext = ".*\.js$"
+            pattern += "*\.js$"
         elif 'style' in line:
-            ext = ".*\.css$"
+            pattern += ".*\.css$"
         elif 'img' in line:
-            ext = ".*\.(gif|jpg|jpeg|png)$"
-        else:
-            ext = '.*'
+            pattern += ".*\.(gif|jpg|jpeg|png)$"
 
         matches = []
 
         for finder in finders.get_finders():
             for path, storage in finder.list([]):
-                if re.compile(ext,re.IGNORECASE).match(path) \
-                    and path.startswith(pattern):
+                if re.compile(pattern,re.IGNORECASE).match(path):
                     matches.append(dict(word=path,info=''))
 
         return matches
