@@ -251,6 +251,7 @@ def get_template_names(pattern):
     dirs = mysettings.TEMPLATE_DIRS + app_template_dirs
     matches = []
     for d in dirs:
+        d = d + ('/' if not d.endswith('/') else '')
         for m in glob(os.path.join(d,pattern + '*')):
             if os.path.isdir(m):
                 for root,dirnames,filenames in os.walk(m):
@@ -258,13 +259,13 @@ def get_template_names(pattern):
                         fn,ext = os.path.splitext(f)
                         if ext in TEMPLATE_EXTS:
                             matches.append({
-                                'word' : os.path.join(root,f).replace(d + '/',''),
+                                'word' : os.path.join(root,f).replace(d,''),
                                 'info' : 'found in %s' % d
                             }
                             )
             else:
                 matches.append({
-                    'word' : m.replace(d + '/',''),
+                    'word' : m.replace(d,''),
                     'info' : 'found in %s' % d
                 }
                 )
