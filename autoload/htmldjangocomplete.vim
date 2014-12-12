@@ -159,6 +159,18 @@ warnings.filterwarnings('ignore',
     UserWarning,)
 
 import vim
+import os
+
+# Install the django-configurations importer (before Django setup).
+if os.environ.get('DJANGO_CONFIGURATION'):
+    import configurations.importer
+    configurations.importer.install()
+
+# Setup Django (required for >= 1.7).
+import django
+if hasattr(django, 'setup'):
+    django.setup()
+
 from django.template import get_library
 from django.template.loaders import filesystem, app_directories
 #Later versions of django seem to be fussy about get_library paths.
