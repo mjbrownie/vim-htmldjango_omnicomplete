@@ -19,3 +19,6 @@ v0.9.1 Tue 27 Nov 2012
 
 v0.9.2 Wed 06 May 2014
     - TEMPLATE_DIRS bugfix
+    
+v0.9.3 Tue 06 Jan 2015
+    - Django 1.7 support
