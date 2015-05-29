@@ -164,6 +164,7 @@ import os
 # Install the django-configurations importer (before Django setup).
 if os.environ.get('DJANGO_CONFIGURATION'):
     import configurations.importer
+    import cadcms.management
     configurations.importer.install()
 
 # Setup Django (required for >= 1.7).
@@ -171,16 +172,30 @@ import django
 if hasattr(django, 'setup'):
     django.setup()
 
-from django.template import get_library
+try:
+    #for OLD versions od django
+    from django.template import get_library
+except:
+    #for django 1.8+
+    from django.template.base import get_library
+
 from django.template.loaders import filesystem, app_directories
 #Later versions of django seem to be fussy about get_library paths.
 try:
     from django.template import import_library
 except ImportError:
-    import_library = get_library
+    try:
+        from django.template.base import import_library
+    except ImportError:
+        import_library = get_library
 
 
-from django.template.loaders.app_directories import app_template_dirs
+try:
+    from django.template.loaders.app_directories import app_template_dirs
+except:
+    from django.template.loaders.app_directories import get_app_template_dirs
+    app_template_dirs = get_app_template_dirs('templates')
+
 from django.conf import settings as mysettings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, BlockNode
@@ -196,7 +211,11 @@ try:
     from django.template import get_templatetags_modules
 except ImportError:
     #I've lifted this version from the django source
-    from django.utils.importlib import import_module
+    try:
+        from importlib import import_module
+    except ImportError:
+        from django.utils.importlib import import_module
+
     def get_templatetags_modules():
         """
         Return the list of all available template tag modules.
