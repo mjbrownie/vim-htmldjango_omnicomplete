@@ -184,7 +184,10 @@ from django.template.loaders import filesystem, app_directories
 try:
     from django.template import import_library
 except ImportError:
-    import_library = get_library
+    try:
+        from django.template.base import import_library
+    except ImportError:
+        import_library = get_library
 
 
 try:
@@ -206,7 +209,11 @@ try:
     from django.template import get_templatetags_modules
 except ImportError:
     #I've lifted this version from the django source
-    from django.utils.importlib import import_module
+    try:
+        from importlib import import_module
+    except ImportError:
+        from django.utils.importlib import import_module
+
     def get_templatetags_modules():
         """
         Return the list of all available template tag modules.
