@@ -158,14 +158,17 @@ warnings.filterwarnings('ignore',
     '.*',
     UserWarning,)
 
+import logging
 import vim
 import os
 
 # Install the django-configurations importer (before Django setup).
 if os.environ.get('DJANGO_CONFIGURATION'):
-    import configurations.importer
-    import cadcms.management
-    configurations.importer.install()
+    try:
+        import configurations.importer
+        configurations.importer.install()
+    except:
+        sys.exit()
 
 # Setup Django (required for >= 1.7).
 import django
@@ -255,26 +258,64 @@ def get_block_tags(start=''):
     if not base:
         return []
 
-    def _get_blocks(t,menu_prefix = ''):
+    def _get_blocks(tpl, menu_prefix='', add_name = True):
+        """
+        recursive worker function
+        """
 
-        if t.name in templates and isinstance(t,Template):
-            print "cyclic extends detected!"
+        # TODO I Think this is a 1.8 compatibility thing sending the wrapper
+        # class
+        tpl = getattr(tpl, 'name', None) and tpl or tpl.template
+
+        if tpl.name in templates and isinstance(tpl, Template):
+            logging.info("cyclic extends detected!")
             return []
         else:
-            templates.append(t.name)
+            templates.append(tpl.name)
 
-        blocks = [(b, b.name, menu_prefix + t.name) \
-            for b in t.nodelist if isinstance(b,BlockNode)]
+        if menu_prefix == '' and isinstance(tpl, Template):
+            menu_prefix = "%s > " % tpl.name
 
-        for b, bn, n in blocks:
-            blocks += _get_blocks(b,'%s%s > ' % (menu_prefix,n))
+        blocks = [(block, block.name, menu_prefix)
+                    for block in tpl.nodelist if isinstance(block, BlockNode)]
 
-        if len(t.nodelist) > 0 and isinstance(t.nodelist[0], ExtendsNode):
-            blocks += _get_blocks(get_template(t.nodelist[0].parent_name))
+        for block, name, _ in blocks:
+            if add_name:
+                blocks += _get_blocks(block, '%s%s > ' % (menu_prefix, name))
+            else:
+                blocks += _get_blocks(block, '%s' % (menu_prefix))
+
+        if len(tpl.nodelist) > 0 and isinstance(tpl.nodelist[0], ExtendsNode):
+            logging.debug("parent_name")
+            logging.debug(tpl.nodelist[0].parent_name)
+            parent_template = str(tpl.nodelist[0].parent_name).replace(
+                '"', '').replace("''", '')
+            try:
+                parent_tpl = get_template(parent_template)
+                blocks += _get_blocks(parent_tpl)
+            except TemplateDoesNotExist:
+                logging.info("get_template:TemplateDoesNotExist - '%s'" %
+                                parent_template)
+
+        for node in tpl.nodelist:
+            if not isinstance(node, BlockNode) and not isinstance(node,
+                    ExtendsNode):
+                try:
+                    blocks += _get_blocks(node, menu_prefix, add_name=False)
+                except AttributeError:
+                    logging.info("node %s: no nodelist" % node)
 
         return blocks
 
-    matches =  _get_blocks(base)
+    full_matches = _get_blocks(base)
+
+    names = []
+    matches = []
+    # dedup matches TODO might be a better way of picking matches
+    for match in full_matches:
+        if not match[0] in names:
+            matches.append(match)
+            names.append(match[0])
 
     return [{'word':n,'menu':m} for b, n, m in matches if n.startswith(start)]
 
