@@ -1,16 +1,16 @@
-Vim htmldjango autocomplete
+#Vim htmldjango autocomplete
 
 An omnicomplete tailored to django templates "tags/variables/filters/templates"
 
 Repo: git://github.com/mjbrownie/vim-htmldjango_omnicomplete.git
 
-Screenshots:
+##Screenshots:
 
 ![](https://raw.githubusercontent.com/mjbrownie/media/master/django_completeme.gif)
 ( Note the screenshot is from the youcompleteme rewrite found here https://github.com/mjbrownie/django_completeme).
-This plugin is standalone and functionally identical except for the fuzzy ycm completion options.
+This plugin is standalone and functionally identical except for the fuzzy ycm completion options. See notes at the bottom.
 
-Eg.
+##Eg.
 
     1. Filters
 
@@ -59,11 +59,11 @@ Eg.
     Where possible info panels show the functions __doc__. Most of the
     internal ones are decent.
 
-Requires:
+##Requires:
 
     +python
 
-SETUP
+##SETUP
 
     1. I like pathogen/Vundle clone into ~/.vim/bundle directory.
 
@@ -97,7 +97,7 @@ SETUP
         au FileType htmldjango inoremap {% {% %}<left><left><left>
         au FileType htmldjango inoremap {{ {{ }}<left><left><left>
 
-TESTING
+##TESTING
 
     django needs to be in sys.path along with DJANGO_SETTINGS_MODULE in your
     environment.
@@ -115,39 +115,14 @@ TESTING
 
     I've only tested this on a mac with vim 7.3 and django 1.4
 
-TODO
+##NOTES
 
-    most of the line regexps still need tweaking. This might not work well with
-    an auto popup plugin like autocompletepop. Expect incorrect types to be set
-    as the context for edge cases.
+    Note I have started rewriting an editior agnostic version of this plugin.
 
-    -python fallback to naive lists.
+    https://github.com/mjbrownie/django_completeme
 
-    Also RequestContext variables aren't seamlessly populated. It is possible
-    to populate a naive list yourself. In a future edition I might look at
-    plugging in python omnicomplete and grabbing Variables with some
-    middleware trickery. Ideas welcome.
+    It can be used with my fork of the youcompleteme daemon.
 
-    some vim file to :so
+    https://github.com/mjbrownie/ycmd
 
-    python << EOF
-    htmldjango_opts['variable'] = [
-    {'word': 'myvariable', info:'my description'},
-    {'word': 'my_other_variable', info:'my description'},
-    ]
-    EOF
-
-    Intelligent DOCTYPE handling
-        look for extends ... detect type in base html document etc
-
-    {% filter %} complete.
-
-        Special case  for filter. provide filters as first argument. Limit to
-        string filters
-
-
-INTERNAL TODO
-
-    Refactor to cleanup namespace under a htmldjangocomplete class
-
-    remove load always plugin
+    but it is still pre alpha.
