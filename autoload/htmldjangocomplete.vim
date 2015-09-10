@@ -154,9 +154,7 @@ except:
 TEMPLATE_EXTS = ['.html','.txt','.htm']
 
 import warnings
-warnings.filterwarnings('ignore',
-    '.*',
-    UserWarning,)
+warnings.sys.warnoptions = ['-W']
 
 import logging
 import vim
