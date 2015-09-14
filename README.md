@@ -1,5 +1,7 @@
 #Vim htmldjango autocomplete
 
+[![Join the chat at https://gitter.im/mjbrownie/vim-htmldjango_omnicomplete](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mjbrownie/vim-htmldjango_omnicomplete?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 An omnicomplete tailored to django templates "tags/variables/filters/templates"
 
 Repo: git://github.com/mjbrownie/vim-htmldjango_omnicomplete.git
