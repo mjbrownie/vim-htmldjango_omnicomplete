@@ -319,7 +319,7 @@ def get_block_tags(start=''):
 
 def get_template_names(pattern):
 
-    dirs = getattr(mysettings, "TEMPLATE_DIRS ", ()) + app_template_dirs
+    dirs = getattr(mysettings, "TEMPLATE_DIRS", ()) + app_template_dirs
     if hasattr(mysettings, "TEMPLATES"):
         for d in [e["DIRS"] for e in mysettings.TEMPLATES]:
             dirs += tuple(d)
