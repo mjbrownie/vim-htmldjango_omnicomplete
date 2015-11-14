@@ -318,7 +318,12 @@ def get_block_tags(start=''):
     return [{'word':n,'menu':m} for b, n, m in matches if n.startswith(start)]
 
 def get_template_names(pattern):
-    dirs = mysettings.TEMPLATE_DIRS + app_template_dirs
+
+    dirs = getattr(mysettings, "TEMPLATE_DIRS ", ()) + app_template_dirs
+    if hasattr(mysettings, "TEMPLATES"):
+        for d in [e["DIRS"] for e in mysettings.TEMPLATES]:
+            dirs += tuple(d)
+
     matches = []
     for d in dirs:
         d = d + ('/' if not d.endswith('/') else '')
