@@ -1,4 +1,11 @@
-#Vim htmldjango autocomplete
+# Vim htmldjango autocomplete
+
+## NOTES
+
+I have a YCM version of this plugin that is still seeing some updates.
+
+    https://github.com/mjbrownie/django_completeme
+    
 
 [![Join the chat at https://gitter.im/mjbrownie/vim-htmldjango_omnicomplete](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mjbrownie/vim-htmldjango_omnicomplete?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -6,13 +13,12 @@ An omnicomplete tailored to django templates "tags/variables/filters/templates"
 
 Repo: git://github.com/mjbrownie/vim-htmldjango_omnicomplete.git
 
-##Screenshots:
+## Screenshots:
 
 ![](https://raw.githubusercontent.com/mjbrownie/media/master/django_completeme.gif)
 ( Note the screenshot is from the youcompleteme rewrite found here https://github.com/mjbrownie/django_completeme).
-This plugin is standalone and functionally identical except for the fuzzy ycm completion options. See notes at the bottom.
 
-##Eg.
+## Eg.
 
     1. Filters
 
@@ -61,11 +67,11 @@ This plugin is standalone and functionally identical except for the fuzzy ycm co
     Where possible info panels show the functions __doc__. Most of the
     internal ones are decent.
 
-##Requires:
+## Requires:
 
     +python
 
-##SETUP
+## SETUP
 
     1. I like pathogen/Vundle clone into ~/.vim/bundle directory.
 
@@ -99,7 +105,7 @@ This plugin is standalone and functionally identical except for the fuzzy ycm co
         au FileType htmldjango inoremap {% {% %}<left><left><left>
         au FileType htmldjango inoremap {{ {{ }}<left><left><left>
 
-##TESTING
+## TESTING
 
     django needs to be in sys.path along with DJANGO_SETTINGS_MODULE in your
     environment.
@@ -117,14 +123,4 @@ This plugin is standalone and functionally identical except for the fuzzy ycm co
 
     I've only tested this on a mac with vim 7.3 and django 1.4
 
-##NOTES
 
-    Note I have started rewriting an editior agnostic version of this plugin.
-
-    https://github.com/mjbrownie/django_completeme
-
-    It can be used with my fork of the youcompleteme daemon.
-
-    https://github.com/mjbrownie/ycmd
-
-    but it is still pre alpha.
